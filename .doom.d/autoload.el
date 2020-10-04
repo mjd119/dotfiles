@@ -2,7 +2,7 @@
 
 ; Truncate the buffer name on the mode-line (mjd119) from https://www.reddit.com/r/DoomEmacs/comments/ie96qy/truncating_buffer_name_on_mode_line_doommodeline/
 ;;;###autoload
-(defvar durand-buffer-name-max 50
+(defvar durand-buffer-name-max 100
   "The maximal length of the buffer name in modeline.")
 
 ;;;###autoload

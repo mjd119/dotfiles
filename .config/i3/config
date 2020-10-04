@@ -9,7 +9,7 @@
 #
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 # Alt-key is the mod key (Regular Desktop Mode)
-set $mod Mod1
+set $mod Mod4
 # Right Windows Key is the mod key (Game Mode)
 #set $mod Mod3
 

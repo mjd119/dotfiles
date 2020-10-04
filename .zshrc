@@ -71,6 +71,7 @@ DISABLE_AUTO_UPDATE="true"
 plugins=(
   zsh-syntax-highlighting
   zsh-autosuggestions
+  autojump
 )
 
 

@@ -44,53 +44,47 @@ function fallback_find_cover {
 function find_cover_parent {
     album="${file%/*}" # Start in parent directory (traverse down)
     # Look for Album file in parent directory first (useful for double albums with separate folders for discs)
-    album_cover="$(find "${album%/*}" -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*\([Aa]lbum\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
+    album_cover="$(find "$album/.." -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*\(album\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
     # Look for Album file in current directory
     if [ "$album_cover" == "" ]; then
-        album_cover="$(find "$album" -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*\([Aa]lbum\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
+        album_cover="$(find "$album" -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*\(album\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
     fi
 
 
     # Look for Folder file in parent directory first (useful for double albums with separate folders for discs)
     if [ "$album_cover" == "" ]; then
-        album_cover="$(find "${album%/*}" -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*\([Ff]older\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
-
-
+        album_cover="$(find "$album/.." -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*\(folder\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
     fi
     # Look for Folder file in current directory
     if [ "$album_cover" == "" ]; then
-        album_cover="$(find "$album" -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*\([Ff]older\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
+        album_cover="$(find "$album" -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*\(folder\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
     fi
 
 
     # Look for Cover file in parent directory first (useful for double albums with separate folders for discs)
     if [ "$album_cover" == "" ]; then
-        album_cover="$(find "${album%/*}" -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*\([Cc]over\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
+        album_cover="$(find "$album/.." -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*\(cover\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
     fi
-
-
     # Look for Cover file in current directory
     if [ "$album_cover" == "" ]; then
-        album_cover="$(find "$album" -maxdepth 0 type d -exec find {} -maxdepth 1 -type f -iregex ".*\([Cc]over\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
+        album_cover="$(find "$album" -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*\(cover\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
     fi
 
 
     # Look for Front file in parent directory first (useful for double albums with separate folders for discs)
     if [ "$album_cover" == "" ]; then
-        album_cover="$(find "${album%/*}" -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*\([Ff]ront\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
+        album_cover="$(find "$album/.." -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*\(front\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
     fi
     # Look for Front file in current directory
     if [ "$album_cover" == "" ]; then
-        album_cover="$(find "$album" -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*\([Ff]ront\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
+        album_cover="$(find "$album" -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*\(front\)[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
     fi
 
 
     # Look for other files in parent directory first (useful for double albums with separate folders for discs) [lazy method]
     if [ "$album_cover" == "" ]; then
-        album_cover="$(find "${album%/*}" -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
+        album_cover="$(find "$album/.." -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
     fi
-
-
     # Look for other files in current directory (lazy method)
     if [ "$album_cover" == "" ]; then
         album_cover="$(find "$album" -maxdepth 0 -type d -exec find {} -maxdepth 1 -type f -iregex ".*[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
