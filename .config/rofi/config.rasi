@@ -1,7 +1,7 @@
 // Theme is from external file (https://github.com/davatorium/rofi-themes)
 configuration {
   show-icons: true;
-  font: "SauceCodePro Nerd Font Mono Medium 12";
+  font: "SauceCodePro Nerd Font Mono 12";
   drun-display-format: "{icon} {name}";
   display-run: " ";
   display-drun: " ";

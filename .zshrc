@@ -72,6 +72,7 @@ plugins=(
   zsh-syntax-highlighting
   zsh-autosuggestions
   autojump
+  fzf
 )
 
 

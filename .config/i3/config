@@ -121,7 +121,7 @@ bindsym $mod+a focus parent
 # Partial Screenshot (drag to crop)
 bindsym Print exec "flameshot gui" 
 # Full screenshot
-bindsym Shift+Print exec flameshot full --path ~/Pictures 
+bindsym Shift+Print exec flameshot full --path ~/Pictures/Screenshots/ 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
 set $ws1 "1"
@@ -306,5 +306,8 @@ client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 client.background       #ffffff
 # Open ncmpcpp (music player) on startup, switch back to workspace 1
 #exec --no-startup-id i3-msg "workspace 2; exec termite --exec=ncmpcpp; workspace 1"
+# Enable spiraling window tiling like bspwm using AUR package (added by mjd119)
+exec --no-startup-id autotiling
+# Start radeon-profile for GPU fan control
+exec --no-startup-id radeon-profile
 # mjd119 end ##
-

@@ -2,8 +2,7 @@
 # Restart on failure line added from https://bbs.archlinux.org/viewtopic.php?id=250540
 [Unit]
 Description=IMWheel
-Wants=display-manager.service
-After=display-manager.service
+PartOf=graphical-session.target
 [Service]
 Type=simple
 Environment=DISPLAY=:0
