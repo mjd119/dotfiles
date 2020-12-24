@@ -310,4 +310,6 @@ client.background       #ffffff
 exec --no-startup-id autotiling
 # Start radeon-profile for GPU fan control
 exec --no-startup-id radeon-profile
+# Start imwheel (faster scrolling)
+exec --no-startup-id imwheel -d -b 45
 # mjd119 end ##

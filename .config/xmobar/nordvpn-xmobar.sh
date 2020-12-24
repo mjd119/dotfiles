@@ -6,5 +6,5 @@ STATUS=$(nordvpn status | grep Status | tr -d ' ' | cut -d ':' -f2)
 if [ "$STATUS" = "Connected" ]; then
     echo "$(nordvpn status | grep City | cut -d ':' -f2)"
 else
-    echo "%{F#f00}%{A1:nordvpn c:}no vpn%{A}%{F-}"
+    echo "no vpn"
 fi
