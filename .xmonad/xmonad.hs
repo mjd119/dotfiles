@@ -13,32 +13,40 @@ import System.Exit
 import XMonad.Hooks.ManageDocks -- Import so xmobar is not behind windows
 import XMonad.Util.SpawnOnce -- Import for spawnOnce command (mjd119)
 import XMonad.Util.Run -- Import for spawnPipe (mjd119)
-import XMonad.Layout.Tabbed -- Import for tabbed layout (mjd119)
--- import XMonad.Layout.Gaps -- Don't need at the moment
-import XMonad.Layout.Spacing -- Import for gaps around windows
-import XMonad.Layout.Grid -- Import for grid layout
-import XMonad.Layout.NoBorders -- Import for smartBorders (no border when there is 1 window)
--- import XMonad.Layout.Fullscreen -- Import for proper full screen support
-import XMonad.Layout.Spiral -- Import for spiral layout (like bspwm's spiral and autotiling for i3)
-import XMonad.Hooks.EwmhDesktops -- Import to allow rofi window switcher functionality
-import XMonad.Layout.BinarySpacePartition as BSP -- Import for BSP layout
-import XMonad.Layout.WindowNavigation as WN -- Import to allow window navigation with keys (directional)
 import XMonad.Hooks.DynamicLog -- Import to display statusbar information for xmobar
 --import XMonad.Config.Desktop
 import XMonad.Actions.SpawnOn -- Import to spawn programs on workspaces (post-compile or on startup)
 import XMonad.Util.EZConfig -- Import to create keyboard shortcuts with emacs-like keybinding syntax
 import XMonad.Layout.SubLayouts -- Import needed for creating sublayouts
 import XMonad.Layout.Simplest -- Import to be used with tabbed sublayout
---import XMonad.Layout.Groups
+-- import XMonad.Layout.Groups
+-- import XMonad.Layout.Gaps -- Don't need at the moment
+-- import XMonad.Layout.Fullscreen -- Import for proper full screen support
+import XMonad.Layout.Tabbed -- Import for tabbed layout (mjd119)
+import XMonad.Layout.Spacing -- Import for gaps around windows
+import XMonad.Layout.Grid -- Import for grid layout
+import XMonad.Layout.NoBorders -- Import for smartBorders (no border when there is 1 window)
+import XMonad.Layout.Spiral -- Import for spiral layout (like bspwm's spiral and autotiling for i3)
+import XMonad.Hooks.EwmhDesktops -- Import to allow rofi window switcher functionality
+import XMonad.Layout.BinarySpacePartition as BSP -- Import for BSP layout
+import XMonad.Layout.WindowNavigation as WN -- Import to allow window navigation with keys (directional)
 import XMonad.Layout.PerWorkspace -- Import to have specific layouts for each workspace
 import XMonad.Layout.ToggleLayouts -- Import to toggle layouts (e.g. enable full screen)
 import XMonad.Layout.Renamed -- Import to rename layouts
 import XMonad.Layout.SimpleFloat -- Import for floating layout
 import XMonad.Layout.SimplestFloat -- Import for floating layout (without decoration)
+import XMonad.Layout.Accordion -- Import for accordion layout (non-focused windows in ribbons at the top+bottom of the screen)
+import XMonad.Layout.Dishes -- Import for Dishes layout (stacks extra windows underneath the master windows)
+import XMonad.Layout.Roledex -- Import for Roledex layout
+import XMonad.Layout.TwoPane -- Import for TwoPane layout (left window is master and right is focused or second in layout order)
+import XMonad.Layout.CenteredMaster -- Import for centerMaster layout (master window at center)
+import XMonad.Layout.BinaryColumn -- Import for BinaryColumn layout (all windows in 1 column)
+import XMonad.Layout.IfMax -- Import for IfMax Layout (switch to another layout if greater than N windows)
 import XMonad.Hooks.RefocusLast -- Import to refocus most recent window (fix file dialog issue)
 import XMonad.Hooks.Place -- Import to control placement of floating windows on the screen
 import XMonad.Hooks.InsertPosition -- Import to control where new windows are placed
 import XMonad.Hooks.ManageHelpers -- Import to specify hooks to fire if not caught by earlier ones (isDialog fix) from https://wiki.haskell.org/Xmonad/Frequently_asked_questions
+import XMonad.Actions.CycleWS -- Import to cycle through workspaces
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
@@ -58,6 +66,7 @@ myClickJustFocuses = False
 -- Width of the window border in pixels.
 --
 myBorderWidth   = 0 -- Was 1 (mjd119)
+myTabBorderWidth = 0 -- Added by mjd119 to prevent ugly sublayout tab heading borders
 
 -- modMask lets you specify which modkey you want to use. The default
 -- is mod1Mask ("left alt").  You may also consider using mod3Mask
@@ -87,12 +96,8 @@ myFocusedBorderColor = "#4c7899" -- Was #ff0000 (mjd119)
 --
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [
-    --  Reset the layouts on the current workspace to default
-    ((modm .|. shiftMask, xK_space ), setLayout $ XMonad.layoutHook conf)
-
-
-    -- Run xmessage with a summary of the default keybindings (useful for beginners)
-    , ((modm .|. shiftMask, xK_slash ), spawn ("echo \"" ++ help ++ "\" | xmessage -file -"))
+    --  Reset the layouts on the current workspace to default (mjd119 changed to y instead of space)
+    ((modm .|. shiftMask, xK_y ), setLayout $ XMonad.layoutHook conf)
     ]
     ++
 
@@ -123,10 +128,10 @@ myEmacsKeys =
   , ("<Print>", spawn "flameshot gui") -- Take a partial screenshot
   , ("S-<Print>", spawn "flameshot full --path ~/Pictures/Screenshots/") -- Take a full screenshot
   , ("M-S-p", spawn "mpc toggle") -- Play/Pause Music Player Daemon
+  , ("M-S-b", spawn "mpc seek -1%")
   , ("M-S-x", spawn "betterlockscreen -l dim") -- Lock screen
-  , ("M-p", spawn "dmenu_run") -- Open dmenu to open program
-  , ("M-C-c", spawn "xmonad --recompile; killall xmobar; xmonad --restart") -- Recompile and restart xmonad
-  , ("M-S-/", spawn ("echo \"" ++ help ++ "\" | xmessage -file -")) -- Run xmesssage with a summary of the default keybindings (useful for beginners)
+--  , ("M-p", spawn "dmenu_run") -- Open dmenu to open program
+  , ("M-C-c", spawn "xmonad --recompile; killall xmobar trayer; xmonad --restart") -- Recompile and restart xmonad
   , ("M-S-C-<Delete>", io (exitWith ExitSuccess)) -- Quit xmonad
     -- Enable 2 dimensional movement (doesn't work with layouts with master window); window navigation not enabled currently
     -- Vim keybindings
@@ -147,8 +152,8 @@ myEmacsKeys =
   , ("M-C-u", withFocused (sendMessage . UnMerge))
   , ("M-C-/", withFocused (sendMessage . UnMergeAll))
   -- Change focus
-  , ("M-C-,", onGroup W.focusUp')    -- Switch focus to next tab
-  , ("M-C-.", onGroup W.focusDown')  -- Switch focus to prev tab
+  , ("M-C-,", onGroup W.focusUp')    -- Switch focus to next tab (only works in tabbed sublayout)
+  , ("M-C-.", onGroup W.focusDown')  -- Switch focus to prev tab (only works in tabbed sublayout)
   , ("M-<Tab>", windows W.focusDown) -- Move focus to the next window (works on tabs)
   , ("M-S-<Tab>", windows W.focusUp) -- Move focus to the previous windows (works on tabs)
   -- Swap windows
@@ -193,11 +198,15 @@ myEmacsKeys =
   , ("M-f", sendMessage ToggleLayout)
   -- Miscellaneuous actions
   , ("M-S-q", kill) -- Kill focused window
-  , ("M-S-\\", sendMessage NextLayout) -- Go to the next layout algorithm (cycle)
-  , ("M-n", refresh) -- Resize viewed windows to the correct size
+  , ("M-S-<Space>", sendMessage NextLayout) -- Go to the next layout algorithm (cycle)
+  , ("M-r", refresh) -- Resize viewed windows to the correct size
   , ("M-t", withFocused $ windows . W.sink) -- Push window back into tiling mode
   -- TODO Figure out how to do shortcuts where you switch to a workspace or move a window to another workspace
 --  , ("M-S-<Space>", setLayout $ XMonad.layoutHook conf) TODO Figure out how to convert from original
+  , ("M-o", nextWS) -- Go to next workspace
+  , ("M-i", prevWS) -- Go to previous workspace
+  , ("M-S-o", shiftToNext) -- Shift focused window to next workspace
+  , ("M-S-i,", shiftToPrev) -- Shift focused window to previous workspace
   ]
 ------------------------------------------------------------------------
 -- Mouse bindings: default actions bound to mouse events
@@ -239,46 +248,71 @@ tabConfig = def {
   , activeTextColor     = "#282c34"
   , inactiveTextColor   = "#d0d0d0"
   -- TODO Figure out how to not apply borders to tabbed sublayout
-  , activeBorderWidth   = myBorderWidth
-  , inactiveBorderWidth = myBorderWidth
-  , urgentBorderWidth   = myBorderWidth
+  , activeBorderWidth   = 0
+  , inactiveBorderWidth = 0
+  , urgentBorderWidth   = 0
 }
  -- Sublayouts taken from dt dotfiles gitlab
-myLayout =
   -- TODO Figure out how to apply noBorders to only the sublayout windows and keep them for other windows (border looks ugly with tab group)
-  -- BSP layout
-  (renamed [Replace "BSP"] $ onWorkspace "V" (noBorders simplestFloat) $ toggleLayouts (noBorders Full) $
-   avoidStruts $ smartBorders $ windowNavigation $
-   addTabs shrinkText tabConfig $ subLayout [] (noBorders Simplest) $
-   spacingRaw False (Border 10 10 10 10) True (Border 10 10 10 10) True $ emptyBSP) |||
-  -- Tall layout
-  (renamed [Replace "Tall"] $ toggleLayouts (noBorders Full) $ avoidStruts $ smartBorders $ windowNavigation $
-   addTabs shrinkText tabConfig $
-      subLayout [] (noBorders Simplest) $
-  spacingRaw False (Border 10 10 10 10) True (Border 10 10 10 10) True $ tiled) |||
-  -- Grid layout
-  (renamed [Replace "Grid"] $ toggleLayouts (noBorders Full) $ avoidStruts $ smartBorders $ windowNavigation $
-   addTabs shrinkText tabConfig $
-      subLayout [] (noBorders Simplest) $
-   spacingRaw False (Border 10 10 10 10) True (Border 10 10 10 10) True $ Grid) |||
-  -- Tabbed layout
-  (renamed [Replace "Tabbed"] $ toggleLayouts (noBorders Full) $
-   avoidStruts $ smartBorders $ tabbed shrinkText tabConfig) ||| -- Added smartBorders because full screen windows have a border for some reason (may not need noBorders)
-  -- Fullscreen layout
-  (noBorders Full)
+myLayout = bsp
+  ||| tabs
+  ||| accordion
 
+bsp =
+  -- BSP layout
+  (renamed [Replace "BSP"]
+   $ toggleLayouts (noBorders Full)
+   $ avoidStruts
+   $ smartBorders
+   $ windowNavigation
+   $ addTabs shrinkText tabConfig $ subLayout [] (Simplest)
+   $ spacingRaw False (Border 10 10 10 10) True (Border 10 10 10 10) True
+   $ emptyBSP)
+tall =
+  -- Tall layout
+  (renamed [Replace "Tall"]
+   $ toggleLayouts (noBorders Full)
+   $ avoidStruts
+   $ smartBorders
+   $ windowNavigation
+   $ addTabs shrinkText tabConfig
+   $ subLayout [] (Simplest)
+   $ spacingRaw False (Border 10 10 10 10) True (Border 10 10 10 10) True $ tiled)
   where
      -- default tiling algorithm partitions the screen into two panes
      tiled   = Tall nmaster delta ratio
-
      -- The default number of windows in the master pane
      nmaster = 1
-
      -- Default proportion of screen occupied by master pane
      ratio   = 1/2
-
      -- Percent of screen to increment by when resizing panes
      delta   = 3/100
+grid =
+  -- Grid layout
+  (renamed [Replace "Grid"]
+   $ toggleLayouts (noBorders Full)
+   $ avoidStruts
+   $ smartBorders
+   $ windowNavigation
+   $ addTabs shrinkText tabConfig
+   $ subLayout [] (Simplest)
+   $ spacingRaw False (Border 10 10 10 10) True (Border 10 10 10 10) True $ Grid)
+tabs =
+  -- Tabbed layout
+  (renamed [Replace "Tabbed"] $ toggleLayouts (noBorders Full) $
+   avoidStruts $ smartBorders $ tabbed shrinkText tabConfig)
+  -- Added smartBorders because full screen windows have a border for some reason (may not need noBorders)
+full =
+  -- Fullscreen layout
+  (noBorders Full)
+accordion =
+  -- Accordion layout
+  (renamed [Replace "Accordion"]
+   $ toggleLayouts (noBorders Full)
+   $ avoidStruts
+   $ noBorders
+   $ windowNavigation
+   $ IfMax 3 Accordion (tabbed shrinkText tabConfig))
 ------------------------------------------------------------------------
 -- Window rules:
 
@@ -303,8 +337,9 @@ myManageHook = composeOne
     , className =? "Sxiv"           -?> doCenterFloat
     , className =? "feh"            -?> doCenterFloat
     , isDialog                      -?> doFloat
+    , className =? "Zotero"         -?> doFloat
     -- May not need to handle fullscreen windows
---    , isFullscreen                  -?> doFullFloat
+    , isFullscreen                  -?> doFullFloat
     ] <+> insertPosition Above Newer <+> manageDocks <+> manageSpawn <+> placeHook (simpleSmart)
 
 ------------------------------------------------------------------------
@@ -337,7 +372,7 @@ myEventHook = fullscreenEventHook
 -- Changed return () to spawnOnce with programs (mjd119)
 myStartupHook = do
   spawnOnce "imwheel -d -b 45"
-  spawnOnce "nm-applet &"
+  --spawnOnce "nm-applet &"
   spawnOnce "~/.fehbg &"
   spawnOnce "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &"
   spawnOnce "picom -b --experimental-backends &"
@@ -346,7 +381,7 @@ myStartupHook = do
   --spawnOnce "trayer --edge bottom --align center --widthtype request --padding 10 --SetDockType true --SetPartialStrut true --expand true --monitor 1 --transparent true --alpha 0 --tint 0x282c34  --height 22 &" -- Copied from dt gitlab
 -- See https://wiki.haskell.org/Xmonad/Config_archive/John_Goerzen%27s_Configuration for trayer
 -- TODO Find solution to make trayer pitch black to blend in with xmobar
-  spawn "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --widthtype request --transparent false --height 24 &"
+  spawn "trayer --edge top --align right --SetDockType true --SetPartialStrut false --expand false --widthtype request --transparent false --height 24 &"
   spawnOnOnce "IV" "radeon-profile"
   spawnOnOnce "II" "terminator"
 --  spawnOnOnce "III" "thunar"
@@ -385,54 +420,3 @@ main = do
         },
         startupHook        = myStartupHook
     } `additionalKeysP` myEmacsKeys  -- Include emacs-like keybindings
-
--- | Finally, a copy of the default bindings in simple textual tabular format.
-help :: String
-help = unlines ["The default modifier key is 'alt'. Default keybindings:",
-    "",
-    "-- launching and killing programs",
-    "mod-Shift-Enter  Launch xterminal",
-    "mod-p            Launch dmenu",
-    "mod-Shift-p      Launch gmrun",
-    "mod-Shift-c      Close/kill the focused window",
-    "mod-Space        Rotate through the available layout algorithms",
-    "mod-Shift-Space  Reset the layouts on the current workSpace to default",
-    "mod-n            Resize/refresh viewed windows to the correct size",
-    "",
-    "-- move focus up or down the window stack",
-    "mod-Tab        Move focus to the next window",
-    "mod-Shift-Tab  Move focus to the previous window",
-    "mod-j          Move focus to the next window",
-    "mod-k          Move focus to the previous window",
-    "mod-m          Move focus to the master window",
-    "",
-    "-- modifying the window order",
-    "mod-Return   Swap the focused window and the master window",
-    "mod-Shift-j  Swap the focused window with the next window",
-    "mod-Shift-k  Swap the focused window with the previous window",
-    "",
-    "-- resizing the master/slave ratio",
-    "mod-h  Shrink the master area",
-    "mod-l  Expand the master area",
-    "",
-    "-- floating layer support",
-    "mod-t  Push window back into tiling; unfloat and re-tile it",
-    "",
-    "-- increase or decrease number of windows in the master area",
-    "mod-comma  (mod-,)   Increment the number of windows in the master area",
-    "mod-period (mod-.)   Deincrement the number of windows in the master area",
-    "",
-    "-- quit, or restart",
-    "mod-Shift-q  Quit xmonad",
-    "mod-q        Restart xmonad",
-    "mod-[1..9]   Switch to workSpace N",
-    "",
-    "-- Workspaces & screens",
-    "mod-Shift-[1..9]   Move client to workspace N",
-    "mod-{w,e,r}        Switch to physical/Xinerama screens 1, 2, or 3",
-    "mod-Shift-{w,e,r}  Move client to screen 1, 2, or 3",
-    "",
-    "-- Mouse bindings: default actions bound to mouse events",
-    "mod-button1  Set the window to floating mode and move by dragging",
-    "mod-button2  Raise the window to the top of the stack",
-    "mod-button3  Set the window to floating mode and resize by dragging"]

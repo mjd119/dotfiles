@@ -41,7 +41,8 @@ mpd_music_dir = ~/Music
 ## visualization or 44100:16:2 for stereo visualization. Example configuration
 ## (it has to be put into mpd.conf):
 ##
-visualizer_fifo_path = /tmp/mpd.fifo
+#visualizer_fifo_path is deprecated in version 0.10 (mjd119)
+visualizer_data_source = /tmp/mpd.fifo
 #
 ##
 ## Note: Below parameter is needed for ncmpcpp to determine which output
@@ -63,7 +64,7 @@ visualizer_in_stereo = yes
 ## that sane values start with >=10.
 ##
 #
-visualizer_sync_interval = 30
+#visualizer_sync_interval = 30 # Deprecated in version 0.10 (mjd119)
 #
 ##
 ## Note: To enable spectrum frequency visualization you need to compile ncmpcpp
@@ -72,9 +73,9 @@ visualizer_sync_interval = 30
 #
 ## Available values: spectrum, wave, wave_filled, ellipse.
 ##
-visualizer_type = spectrum
+visualizer_type = wave
 #
-visualizer_look = +|
+visualizer_look = ●▮
 #
 visualizer_color = blue, cyan, green, yellow, magenta, red
 #

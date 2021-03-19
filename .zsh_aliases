@@ -9,7 +9,7 @@ alias trim="awk '!/^ *#/ && NF'" #(https://stackoverflow.com/a/17396799)
 alias startfolding="systemctl start foldingathome"
 alias stopfolding="systemctl stop foldingathome"
 alias statusfolding="systemctl status foldingathome"
-alias startkde="startx /usr/bin/startplasma-x11"
+alias startkde="source .xprofile && startx /usr/bin/startplasma-x11"
 alias gulp="i3-swallow"
 alias sgulp="sudo i3-swallow"
 alias xdocker="docker run --rm -it --name my-running-app -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix:ro"

@@ -1,5 +1,6 @@
 # Service file from Arch Wiki (mjd119 added -b 45 argument to enable front/back buttons)
 # Restart on failure line added from https://bbs.archlinux.org/viewtopic.php?id=250540
+# No longer use this service (run it on window manager or desktop environment startup) 
 [Unit]
 Description=IMWheel
 PartOf=graphical-session.target

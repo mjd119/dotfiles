@@ -28,7 +28,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/org/")
+(setq org-directory "~/Notes/")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -61,27 +61,27 @@
  ;; If there is more than one, they won't work right.
  )
 ; Added by mjd119 to truncate buffer name for the mode-line (mjd119) from https://www.reddit.com/r/DoomEmacs/comments/ie96qy/truncating_buffer_name_on_mode_line_doommodeline/
-(after! doom-modeline
-  (add-to-list 'doom-modeline-fn-alist (cons 'buffer-info-durand 'doom-modeline-segment--buffer-info-durand))
-  ;; NOTE: Of course your mode-line should vary from mine.
-  (doom-modeline-def-modeline 'durand
-    '(bar
-      modals
-      buffer-info-durand
-      remote-host
-      matches)
-    '(misc-info
-      debug
-      lsp
-      input-method
-      indent-info
-      major-mode
-      vcs
-      checker))
-
-  ;; NOTE: I set the mode-line-format twice; this is probably not necessary.
-
-  (add-hook! 'doom-modeline-mode-hook :append
-    (setq-default mode-line-format '("%e" (:eval (doom-modeline-format--durand)))))
-
-  (setf mode-line-format '("%e" (:eval (doom-modeline-format--durand)))))
+;(after! doom-modeline
+;  (add-to-list 'doom-modeline-fn-alist (cons 'buffer-info-durand 'doom-modeline-segment--buffer-info-durand))
+;  ;; NOTE: Of course your mode-line should vary from mine.
+;  (doom-modeline-def-modeline 'durand
+;    '(bar
+;      modals
+;      buffer-info-durand
+;      remote-host
+;      matches)
+;    '(misc-info
+;      debug
+;      lsp
+;      input-method
+;      indent-info
+;      major-mode
+;      vcs
+;      checker))
+;
+;  ;; NOTE: I set the mode-line-format twice; this is probably not necessary.
+;
+;  (add-hook! 'doom-modeline-mode-hook :append
+;    (setq-default mode-line-format '("%e" (:eval (doom-modeline-format--durand)))))
+;
+;  (setf mode-line-format '("%e" (:eval (doom-modeline-format--durand)))))
