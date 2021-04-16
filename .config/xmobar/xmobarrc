@@ -26,7 +26,8 @@ Config { font = "xft:SauceCodePro Nerd Font Mono:pixelsize=15:antialias=true:hin
                     , Run Com "uname" ["-s","-r"] "" 36000
                     , Run Date "%a %b %_d %Y %r" "date" 10
                     -- From ArchWiki
-                    , Run MPD ["-t", "[<artist> - <title> - <album> | <lapsed>/<length>]"] 10
+                    -- TODO Figure out how to add ellipsis when max width of command is surpassed
+                    , Run MPD ["-T 175", "-t", "[<artist> - <title> - <album> | <lapsed>/<length>]"] 10
                     , Run Com "/home/matt/.config/xmobar/nordvpn-xmobar.sh" [] "nordvpn" 600
                     , Run UnsafeStdinReader
                     -- From https://github.com/jaor/xmobar/issues/239#issuecomment-233206552
@@ -34,5 +35,5 @@ Config { font = "xft:SauceCodePro Nerd Font Mono:pixelsize=15:antialias=true:hin
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%UnsafeStdinReader% | %uname% %cpu% %memory%}<fc=#ee9a00>%date%</fc> {%nordvpn% %enp3s0% %mpd% %trayerpad%"
+       , template = "%UnsafeStdinReader% | %uname% %cpu% %memory% %nordvpn% %enp3s0%}<fc=#ee9a00>%date%</fc> {%mpd% %trayerpad%"
        }

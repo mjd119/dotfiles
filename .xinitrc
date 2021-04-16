@@ -22,10 +22,11 @@ fi
 [[ -f ~/.Xmodmap ]] && xmodmap ~/.Xmodmap
 xsetroot -cursor_name left_ptr # Needed to set cursor for the root window
 # Disable mouse acceleration (see https://liquipedia.net/starcraft2/Mouse_settings)
-xset m 1/1 9999
+#xset m 1/1 9999 no longer recommended by Arch Wiki
 xset r rate 250 30 # Typematic delay and rate for Xorg
-# Uncomment lines below to start KDE Plasma
-#export DESKTOP_SESSION=plamsa
-#exec startplasma-x11
 #exec i3
 exec xmonad
+# Needed to start gnome desktop environment (from Arch Wiki)
+#export XDG_SESSION_TYPE=x11
+#export GDK_BACKEND=x11
+#exec gnome-session

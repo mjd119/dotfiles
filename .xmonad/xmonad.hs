@@ -3,10 +3,6 @@
 --
 -- A template showing all available configuration hooks,
 -- and how to override the defaults in your own xmonad.hs conf file.
---
--- Normally, you'd only override those defaults you care about.
---
--- Import statements
 import XMonad
 import Data.Monoid
 import System.Exit
@@ -36,17 +32,18 @@ import XMonad.Layout.Renamed -- Import to rename layouts
 import XMonad.Layout.SimpleFloat -- Import for floating layout
 import XMonad.Layout.SimplestFloat -- Import for floating layout (without decoration)
 import XMonad.Layout.Accordion -- Import for accordion layout (non-focused windows in ribbons at the top+bottom of the screen)
-import XMonad.Layout.Dishes -- Import for Dishes layout (stacks extra windows underneath the master windows)
-import XMonad.Layout.Roledex -- Import for Roledex layout
-import XMonad.Layout.TwoPane -- Import for TwoPane layout (left window is master and right is focused or second in layout order)
-import XMonad.Layout.CenteredMaster -- Import for centerMaster layout (master window at center)
-import XMonad.Layout.BinaryColumn -- Import for BinaryColumn layout (all windows in 1 column)
+-- import XMonad.Layout.Dishes -- Import for Dishes layout (stacks extra windows underneath the master windows)
+-- import XMonad.Layout.Roledex -- Import for Roledex layout
+-- import XMonad.Layout.TwoPane -- Import for TwoPane layout (left window is master and right is focused or second in layout order)
+-- import XMonad.Layout.CenteredMaster -- Import for centerMaster layout (master window at center)
+-- import XMonad.Layout.BinaryColumn -- Import for BinaryColumn layout (all windows in 1 column)
 import XMonad.Layout.IfMax -- Import for IfMax Layout (switch to another layout if greater than N windows)
 import XMonad.Hooks.RefocusLast -- Import to refocus most recent window (fix file dialog issue)
 import XMonad.Hooks.Place -- Import to control placement of floating windows on the screen
 import XMonad.Hooks.InsertPosition -- Import to control where new windows are placed
 import XMonad.Hooks.ManageHelpers -- Import to specify hooks to fire if not caught by earlier ones (isDialog fix) from https://wiki.haskell.org/Xmonad/Frequently_asked_questions
 import XMonad.Actions.CycleWS -- Import to cycle through workspaces
+import XMonad.Actions.WithAll -- Import to kill all windows on current workspace
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
@@ -57,7 +54,7 @@ myTerminal      = "termite"
 
 -- Whether focus follows the mouse pointer.
 myFocusFollowsMouse :: Bool
-myFocusFollowsMouse = False
+myFocusFollowsMouse = True
 
 -- Whether clicking on a window to focus also passes the click to the window
 myClickJustFocuses :: Bool
@@ -198,6 +195,7 @@ myEmacsKeys =
   , ("M-f", sendMessage ToggleLayout)
   -- Miscellaneuous actions
   , ("M-S-q", kill) -- Kill focused window
+  , ("M-S-C-q", killAll) -- Kill all windows on current workspace (found on dt gitlab dotfiles)
   , ("M-S-<Space>", sendMessage NextLayout) -- Go to the next layout algorithm (cycle)
   , ("M-r", refresh) -- Resize viewed windows to the correct size
   , ("M-t", withFocused $ windows . W.sink) -- Push window back into tiling mode
@@ -254,7 +252,9 @@ tabConfig = def {
 }
  -- Sublayouts taken from dt dotfiles gitlab
   -- TODO Figure out how to apply noBorders to only the sublayout windows and keep them for other windows (border looks ugly with tab group)
-myLayout = bsp
+myLayout =
+  refocusLastLayoutHook
+  $ bsp
   ||| tabs
   ||| accordion
 
@@ -265,7 +265,8 @@ bsp =
    $ avoidStruts
    $ smartBorders
    $ windowNavigation
-   $ addTabs shrinkText tabConfig $ subLayout [] (Simplest)
+   $ addTabs shrinkText tabConfig
+   $ subLayout [] (Simplest)
    $ spacingRaw False (Border 10 10 10 10) True (Border 10 10 10 10) True
    $ emptyBSP)
 tall =
@@ -329,17 +330,19 @@ accordion =
 -- 'className' and 'resource' are used below.
 -- Managespawn needed to spawn windows on specific workspaces
 -- TODO Figure out how to use insertPosition so spawned window is focused and vlc's dock pops up in full screen
-myManageHook = composeOne
-    [ className =? "MPlayer"        -?> doFloat
-    , className =? "Gimp"           -?> doFloat
-    , resource  =? "desktop_window" -?> doIgnore
-    , resource  =? "kdesktop"       -?> doIgnore
-    , className =? "Sxiv"           -?> doCenterFloat
-    , className =? "feh"            -?> doCenterFloat
-    , isDialog                      -?> doFloat
-    , className =? "Zotero"         -?> doFloat
+myManageHook = composeAll
+    [ className =? "MPlayer"        --> doFloat
+    , className =? "Gimp"           --> doFloat
+    , resource  =? "desktop_window" --> doIgnore
+    , resource  =? "kdesktop"       --> doIgnore
+    , className =? "Sxiv"           --> doCenterFloat
+    , className =? "feh"            --> doCenterFloat
+    , isDialog                      --> doCenterFloat
+    , title =? "Quick Format Citation"  --> doCenterFloat -- For Zotero citation pop up
+    , className =? "firefox" <&&> title =? "Library"  --> doCenterFloat -- For Firefox Downloads,History,Bookmarks window
+    , className =? "firefox" <&&> resource =? "Dialog" --> doCenterFloat -- From dt dotfiles (float firefox dialog windows; might not need)
     -- May not need to handle fullscreen windows
-    , isFullscreen                  -?> doFullFloat
+    , isFullscreen                  --> doFullFloat
     ] <+> insertPosition Above Newer <+> manageDocks <+> manageSpawn <+> placeHook (simpleSmart)
 
 ------------------------------------------------------------------------
@@ -351,7 +354,7 @@ myManageHook = composeOne
 -- return (All True) if the default handler is to be run afterwards. To
 -- combine event hooks use mappend or mconcat from Data.Monoid.
 --
-myEventHook = fullscreenEventHook
+myEventHook = fullscreenEventHook <+> refocusLastWhen (refocusingIsActive <||> isFloat)
 
 ------------------------------------------------------------------------
 -- Status bars and logging
@@ -380,13 +383,15 @@ myStartupHook = do
   spawnOnce "$HOME/.config/udiskie/launch.sh &"
   --spawnOnce "trayer --edge bottom --align center --widthtype request --padding 10 --SetDockType true --SetPartialStrut true --expand true --monitor 1 --transparent true --alpha 0 --tint 0x282c34  --height 22 &" -- Copied from dt gitlab
 -- See https://wiki.haskell.org/Xmonad/Config_archive/John_Goerzen%27s_Configuration for trayer
+-- Not spawn once because I set my xmonad restart shortcut to recompile, kill and restart trayer, and restart xmonad
 -- TODO Find solution to make trayer pitch black to blend in with xmobar
   spawn "trayer --edge top --align right --SetDockType true --SetPartialStrut false --expand false --widthtype request --transparent false --height 24 &"
+  spawnOnce "volumeicon &"
   spawnOnOnce "IV" "radeon-profile"
   spawnOnOnce "II" "terminator"
---  spawnOnOnce "III" "thunar"
---  spawnOnOnce "I" "emacs"
---  spawnOnOnce "I" "firefox"
+--  spawnOnOnce "III" "thunar &"
+--  spawnOnOnce "I" "emacs &"
+--  spawnOnOnce "I" "firefox &"
 ------------------------------------------------------------------------
 -- Now run xmonad with all the defaults we set up.
 
@@ -412,9 +417,9 @@ main = do
         mouseBindings      = myMouseBindings,
 
       -- hooks, layouts
-        layoutHook         = refocusLastLayoutHook $ myLayout, -- Add hook to make sure last focused window is remembered (don't refocus after floating window closed)
+        layoutHook         = myLayout, -- Add hook to make sure last focused window is remembered (don't refocus after floating window closed)
         manageHook         = myManageHook,
-        handleEventHook    = refocusLastWhen (refocusingIsActive <||> isFloat) <+> myEventHook,
+        handleEventHook    = myEventHook,
         logHook            = dynamicLogWithPP $ def {
             ppOutput = hPutStrLn xmproc
         },

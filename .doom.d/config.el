@@ -54,6 +54,10 @@
 ;; 
 ;; Proper line wrapping (from https://www.guilhermesalome.com/posts/making-emacs-look-good.html) [added by mjd119]
 (global-visual-line-mode t)
+;; Required to enable smooth-scrolling on startup (added by mjd119)
+(require 'smooth-scrolling)
+(smooth-scrolling-mode 1)
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
