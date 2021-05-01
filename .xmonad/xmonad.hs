@@ -119,6 +119,9 @@ myEmacsKeys :: [(String, X ())]
 myEmacsKeys =
   [
     ("M-<Return>", spawn myTerminal) -- Spawn terminal
+  , ("M-e", spawn "Thunar") -- Spawn Thunar File Manager window
+  , ("M-b", spawn "firefox") -- Spawn firefox window
+  , ("M-;", spawn "emacsclient -c -a 'emacs'") -- Launch emacs (-a creates emacs instance if one doesn't already exist)
   , ("M-d", spawn "rofi -show drun -show-icons -icon-theme Flat-Remix-Blue") -- Rofi run program
   , ("M-S-d", spawn "rofi -show window -show-icons -icon-theme Flat-Remix-Blue") -- Rofi window switcher
   , ("M-C-d", spawn "rofi -show run -show-icons -icon-theme Flat-Remix-Blue") --  Rofi run shell command
@@ -201,10 +204,10 @@ myEmacsKeys =
   , ("M-t", withFocused $ windows . W.sink) -- Push window back into tiling mode
   -- TODO Figure out how to do shortcuts where you switch to a workspace or move a window to another workspace
 --  , ("M-S-<Space>", setLayout $ XMonad.layoutHook conf) TODO Figure out how to convert from original
-  , ("M-o", nextWS) -- Go to next workspace
-  , ("M-i", prevWS) -- Go to previous workspace
-  , ("M-S-o", shiftToNext) -- Shift focused window to next workspace
-  , ("M-S-i,", shiftToPrev) -- Shift focused window to previous workspace
+  , ("M-<Page_Down>", nextWS) -- Go to next workspace
+  , ("M-<Page_Up>", prevWS) -- Go to previous workspace
+  , ("M-S-<Page_Down>", shiftToNext) -- Shift focused window to next workspace
+  , ("M-S-<Page_Up>", shiftToPrev) -- Shift focused window to previous workspace
   ]
 ------------------------------------------------------------------------
 -- Mouse bindings: default actions bound to mouse events
@@ -250,8 +253,8 @@ tabConfig = def {
   , inactiveBorderWidth = 0
   , urgentBorderWidth   = 0
 }
- -- Sublayouts taken from dt dotfiles gitlab
-  -- TODO Figure out how to apply noBorders to only the sublayout windows and keep them for other windows (border looks ugly with tab group)
+-- Sublayouts taken from dt dotfiles gitlab
+-- TODO Figure out how to apply noBorders to only the sublayout windows and keep them for other windows (border looks ugly with tab group)
 myLayout =
   refocusLastLayoutHook
   $ bsp
@@ -267,7 +270,8 @@ bsp =
    $ windowNavigation
    $ addTabs shrinkText tabConfig
    $ subLayout [] (Simplest)
-   $ spacingRaw False (Border 10 10 10 10) True (Border 10 10 10 10) True
+   -- Disable spacing between windows (previously all values were 10)
+   $ spacingRaw False (Border 0 0 0 0) True (Border 0 0 0 0) True
    $ emptyBSP)
 tall =
   -- Tall layout
@@ -278,7 +282,9 @@ tall =
    $ windowNavigation
    $ addTabs shrinkText tabConfig
    $ subLayout [] (Simplest)
-   $ spacingRaw False (Border 10 10 10 10) True (Border 10 10 10 10) True $ tiled)
+   -- Disable spacing between windows (previously all values were 10)
+   $ spacingRaw False (Border 0 0 0 0) True (Border 0 0 0 0) True
+   $ tiled)
   where
      -- default tiling algorithm partitions the screen into two panes
      tiled   = Tall nmaster delta ratio
@@ -297,7 +303,9 @@ grid =
    $ windowNavigation
    $ addTabs shrinkText tabConfig
    $ subLayout [] (Simplest)
-   $ spacingRaw False (Border 10 10 10 10) True (Border 10 10 10 10) True $ Grid)
+   -- Disable spacing between windows (previously all values were 10)
+   $ spacingRaw False (Border 0 0 0 0) True (Border 0 0 0 0) True
+   $ Grid)
 tabs =
   -- Tabbed layout
   (renamed [Replace "Tabbed"] $ toggleLayouts (noBorders Full) $
@@ -381,7 +389,7 @@ myStartupHook = do
   spawnOnce "picom -b --experimental-backends &"
   spawnOnce "flameshot &"
   spawnOnce "$HOME/.config/udiskie/launch.sh &"
-  --spawnOnce "trayer --edge bottom --align center --widthtype request --padding 10 --SetDockType true --SetPartialStrut true --expand true --monitor 1 --transparent true --alpha 0 --tint 0x282c34  --height 22 &" -- Copied from dt gitlab
+--spawnOnce "trayer --edge bottom --align center --widthtype request --padding 10 --SetDockType true --SetPartialStrut true --expand true --monitor 1 --transparent true --alpha 0 --tint 0x282c34  --height 22 &" -- Copied from dt gitlab
 -- See https://wiki.haskell.org/Xmonad/Config_archive/John_Goerzen%27s_Configuration for trayer
 -- Not spawn once because I set my xmonad restart shortcut to recompile, kill and restart trayer, and restart xmonad
 -- TODO Find solution to make trayer pitch black to blend in with xmobar
@@ -392,6 +400,7 @@ myStartupHook = do
 --  spawnOnOnce "III" "thunar &"
 --  spawnOnOnce "I" "emacs &"
 --  spawnOnOnce "I" "firefox &"
+  spawnOnce "emacs --daemon &" -- Start emacs daemon on startup
 ------------------------------------------------------------------------
 -- Now run xmonad with all the defaults we set up.
 
