@@ -34,7 +34,9 @@ import XMonad.Layout.SimplestFloat -- Import for floating layout (without decora
 import XMonad.Layout.Accordion -- Import for accordion layout (non-focused windows in ribbons at the top+bottom of the screen)
 -- import XMonad.Layout.Dishes -- Import for Dishes layout (stacks extra windows underneath the master windows)
 -- import XMonad.Layout.Roledex -- Import for Roledex layout
--- import XMonad.Layout.TwoPane -- Import for TwoPane layout (left window is master and right is focused or second in layout order)
+import XMonad.Layout.TwoPane -- Import for TwoPane layout (left window is master and right is focused or second in layout order)
+import XMonad.Actions.CycleWindows -- Import to allow cycling windows for layouts that use stacks (i.e. TwoPane)
+import XMonad.Actions.UpdatePointer -- Import to fix issue with focussing with TwoPane window stack rotation
 -- import XMonad.Layout.CenteredMaster -- Import for centerMaster layout (master window at center)
 -- import XMonad.Layout.BinaryColumn -- Import for BinaryColumn layout (all windows in 1 column)
 import XMonad.Layout.IfMax -- Import for IfMax Layout (switch to another layout if greater than N windows)
@@ -50,7 +52,7 @@ import qualified Data.Map        as M
 -- The preferred terminal program, which is used in a binding below and by
 -- certain contrib modules.
 --
-myTerminal      = "termite"
+myTerminal      = "alacritty"
 
 -- Whether focus follows the mouse pointer.
 myFocusFollowsMouse :: Bool
@@ -167,6 +169,13 @@ myEmacsKeys =
   , ("M-,", sendMessage (IncMasterN 1)) -- Increment the number of windows in the master area
   , ("M-.", sendMessage (IncMasterN (-1))) -- Decrement the number of windows in the master area
   -- Commands for layouts with a master window END --
+  -- Commands for cycling windows for layouts that use stacks (i.e. TwoPane) START --
+    -- TODO Fix issue where focused window will change when I don't want it to due to focus following mouse (see CycleWindows docs)
+  , ("M-i", rotUnfocusedUp)
+  , ("M-o", rotUnfocusedDown)
+  , ("M-C-i", rotFocusedUp)
+  , ("M-C-o", rotFocusedDown)
+  -- Commands for cycling windows for layouts that use stacks (i.e. TwoPane) END --
   -- Commands for BSP layout START --
     -- Vim keybindings
   , ("M-M1-h",    sendMessage $ ExpandTowards L)
@@ -257,7 +266,10 @@ tabConfig = def {
 -- TODO Figure out how to apply noBorders to only the sublayout windows and keep them for other windows (border looks ugly with tab group)
 myLayout =
   refocusLastLayoutHook
+  $ onWorkspace "IV" accordion -- Workspace 4 is accordion by default
+  $ onWorkspace "IX" full -- Workspace 9 is full by default
   $ bsp
+  -- ||| twoPane
   ||| tabs
   ||| accordion
 
@@ -308,8 +320,11 @@ grid =
    $ Grid)
 tabs =
   -- Tabbed layout
-  (renamed [Replace "Tabbed"] $ toggleLayouts (noBorders Full) $
-   avoidStruts $ smartBorders $ tabbed shrinkText tabConfig)
+  (renamed [Replace "Tabbed"]
+   $ toggleLayouts (noBorders Full)
+   $ avoidStruts
+   $ smartBorders
+   $ tabbed shrinkText tabConfig)
   -- Added smartBorders because full screen windows have a border for some reason (may not need noBorders)
 full =
   -- Fullscreen layout
@@ -322,6 +337,18 @@ accordion =
    $ noBorders
    $ windowNavigation
    $ IfMax 3 Accordion (tabbed shrinkText tabConfig))
+twoPane =
+  -- Two Pane Layout
+  (renamed [Replace "TwoPane"]
+   $ toggleLayouts (noBorders Full)
+   $ avoidStruts
+   $ smartBorders
+   $ windowNavigation
+   $ addTabs shrinkText tabConfig
+   $ subLayout [] (Simplest)
+   -- Disable spacing between windows (previously all values were 10)
+   $ spacingRaw False (Border 0 0 0 0) True (Border 0 0 0 0) True
+   $ TwoPane (3/100) (1/2))
 ------------------------------------------------------------------------
 -- Window rules:
 

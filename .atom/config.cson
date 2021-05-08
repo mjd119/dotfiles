@@ -1,8 +1,5 @@
 "*":
   core:
-    disabledPackages: [
-      "remote-ftp"
-    ]
     telemetryConsent: "no"
   editor:
     fontSize: 12

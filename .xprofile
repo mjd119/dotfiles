@@ -12,5 +12,6 @@ export PATH=$PATH:~/.emacs.d/bin
 #export GDK_SCALE=2
 #export GDK_DPI_SCALE=0.5
 export QT_AUTO_SCREEN_SCALE_FACTOR=0
-export TERM='termite'
+export TERM='alacritty'
 export EDITOR='vim'
+export SAL_USE_VCLPLUGIN="gen lowriter" # Used to avoid focus flicking between maind window and dialog in libreoffice (xmonad)
