@@ -4,6 +4,9 @@ alias mstop='sudo systemctl stop mpd mpdscribble'
 alias mstatus='sudo systemctl status mpd mpdscribble'
 alias ls="exa --group-directories-first -gh"
 alias grep='grep --color=auto'
+alias diff='grep --color=auto'
+alias ip='ip color=auto'
+alias dmesg='dmesg --color=always'
 alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"
 alias trim="awk '!/^ *#/ && NF'" #(https://stackoverflow.com/a/17396799)
 alias startfolding="systemctl start foldingathome"
@@ -23,4 +26,3 @@ alias vpnstatus="nordvpn status"
 alias vpncheck="nordvpn settings | grep 'enabled'"
 alias vpnoff="nordvpn disconnect && nordvpn set killswitch off && nordvpn set autoconnect off"
 alias vpnon="nordvpn connect && nordvpn set killswitch on && nordvpn set autoconnect on"
-alias startgnome="source .xprofile && XDG_SESSION_TYPE=wayland dbus-run-session gnome-session"
