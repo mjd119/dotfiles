@@ -1,24 +1,25 @@
 # Speed up scrolling for chromium (Arch Wiki)
+# Values were 3 (firefox updated made the scroll speed too fast)
 "^chromium$"
-    None, Up, Button4, 3
-    None, Down, Button5, 3
-    Shift_L,   Up,   Shift_L|Button4, 3
-    Shift_L,   Down, Shift_L|Button5, 3
+    None, Up, Button4, 1
+    None, Down, Button5, 1
+    Shift_L,   Up,   Shift_L|Button4, 1
+    Shift_L,   Down, Shift_L|Button5, 1
     Control_L, Up,   Control_L|Button4
     Control_L, Down, Control_L|Button5
 
 "^firefox$"
-    None, Up, Button4, 3
-    None, Down, Button5, 3
-    Shift_L,   Up,   Shift_L|Button4, 3
-    Shift_L,   Down, Shift_L|Button5, 3
+    None, Up, Button4, 1
+    None, Down, Button5, 1
+    Shift_L,   Up,   Shift_L|Button4, 1
+    Shift_L,   Down, Shift_L|Button5, 1
     Control_L, Up,   Control_L|Button4
     Control_L, Down, Control_L|Button5
 
 "Vivaldi-stable"
-    None, Up, Button4, 3
-    None, Down, Button5, 3
-    Shift_L,   Up,   Shift_L|Button4, 3
-    Shift_L,   Down, Shift_L|Button5, 3
+    None, Up, Button4, 1
+    None, Down, Button5, 1
+    Shift_L,   Up,   Shift_L|Button4, 1
+    Shift_L,   Down, Shift_L|Button5, 1
     Control_L, Up,   Control_L|Button4
     Control_L, Down, Control_L|Button5

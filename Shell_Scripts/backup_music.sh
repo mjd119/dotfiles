@@ -7,7 +7,7 @@ if df | grep -q '/media/matt/Linux$' && df | grep -q '/media/matt/Backup$'; then
 	echo "Found mountpoint"
 	ntfs_music='/media/matt/Backup/Music (Backup)/'
 	ext4_music='/media/matt/Linux/Music_Backup/'
-	rsync -rav -progress "${ntfs_music}" "${ext4_music}" >> ~/.backup_music.log
+	rsync -avhW --no-compress --progress "${ntfs_music}" "${ext4_music}" >> ~/.backup_music.log #https://serverfault.com/a/505758
 	date -u >> ~/.backup_music.log
 	echo -e "\n" >> ~/.backup_music.log
 	# Write the paths to albums that do not contain album art with the name "Album" to files (unsorted and then sorted by path name)

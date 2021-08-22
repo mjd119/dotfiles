@@ -44,6 +44,7 @@ import XMonad.Hooks.RefocusLast -- Import to refocus most recent window (fix fil
 import XMonad.Hooks.Place -- Import to control placement of floating windows on the screen
 import XMonad.Hooks.InsertPosition -- Import to control where new windows are placed
 import XMonad.Hooks.ManageHelpers -- Import to specify hooks to fire if not caught by earlier ones (isDialog fix) from https://wiki.haskell.org/Xmonad/Frequently_asked_questions
+import XMonad.Hooks.SetWMName -- Needed to get JetBrains applications to work with XMonad
 import XMonad.Actions.CycleWS -- Import to cycle through workspaces
 import XMonad.Actions.WithAll -- Import to kill all windows on current workspace
 import qualified XMonad.StackSet as W
@@ -56,7 +57,7 @@ myTerminal      = "alacritty"
 
 -- Whether focus follows the mouse pointer.
 myFocusFollowsMouse :: Bool
-myFocusFollowsMouse = True
+myFocusFollowsMouse = False
 
 -- Whether clicking on a window to focus also passes the click to the window
 myClickJustFocuses :: Bool
@@ -420,7 +421,8 @@ myStartupHook = do
 -- See https://wiki.haskell.org/Xmonad/Config_archive/John_Goerzen%27s_Configuration for trayer
 -- Not spawn once because I set my xmonad restart shortcut to recompile, kill and restart trayer, and restart xmonad
 -- TODO Find solution to make trayer pitch black to blend in with xmobar
-  spawn "trayer --edge top --align right --SetDockType true --SetPartialStrut false --expand false --widthtype request --transparent false --height 24 &"
+-- Use sleep to prevent white outline (trayer loading before xmobar)
+  spawn "sleep 1 && trayer --edge top --align right --SetDockType true --SetPartialStrut false --expand true --widthtype request --transparent false --height 24 &"
   spawnOnce "volumeicon &"
   spawnOnOnce "IV" "radeon-profile"
   spawnOnOnce "II" "terminator"
@@ -428,6 +430,7 @@ myStartupHook = do
 --  spawnOnOnce "I" "emacs &"
 --  spawnOnOnce "I" "firefox &"
   spawnOnce "emacs --daemon &" -- Start emacs daemon on startup
+  setWMName "LG3D"
 ------------------------------------------------------------------------
 -- Now run xmonad with all the defaults we set up.
 
