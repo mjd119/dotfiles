@@ -15,9 +15,6 @@ import XMonad.Actions.SpawnOn -- Import to spawn programs on workspaces (post-co
 import XMonad.Util.EZConfig -- Import to create keyboard shortcuts with emacs-like keybinding syntax
 import XMonad.Layout.SubLayouts -- Import needed for creating sublayouts
 import XMonad.Layout.Simplest -- Import to be used with tabbed sublayout
--- import XMonad.Layout.Groups
--- import XMonad.Layout.Gaps -- Don't need at the moment
--- import XMonad.Layout.Fullscreen -- Import for proper full screen support
 import XMonad.Layout.Tabbed -- Import for tabbed layout (mjd119)
 import XMonad.Layout.Spacing -- Import for gaps around windows
 import XMonad.Layout.Grid -- Import for grid layout
@@ -32,13 +29,9 @@ import XMonad.Layout.Renamed -- Import to rename layouts
 import XMonad.Layout.SimpleFloat -- Import for floating layout
 import XMonad.Layout.SimplestFloat -- Import for floating layout (without decoration)
 import XMonad.Layout.Accordion -- Import for accordion layout (non-focused windows in ribbons at the top+bottom of the screen)
--- import XMonad.Layout.Dishes -- Import for Dishes layout (stacks extra windows underneath the master windows)
--- import XMonad.Layout.Roledex -- Import for Roledex layout
 import XMonad.Layout.TwoPane -- Import for TwoPane layout (left window is master and right is focused or second in layout order)
 import XMonad.Actions.CycleWindows -- Import to allow cycling windows for layouts that use stacks (i.e. TwoPane)
 import XMonad.Actions.UpdatePointer -- Import to fix issue with focussing with TwoPane window stack rotation
--- import XMonad.Layout.CenteredMaster -- Import for centerMaster layout (master window at center)
--- import XMonad.Layout.BinaryColumn -- Import for BinaryColumn layout (all windows in 1 column)
 import XMonad.Layout.IfMax -- Import for IfMax Layout (switch to another layout if greater than N windows)
 import XMonad.Hooks.RefocusLast -- Import to refocus most recent window (fix file dialog issue)
 import XMonad.Hooks.Place -- Import to control placement of floating windows on the screen
@@ -417,7 +410,6 @@ myStartupHook = do
   spawnOnce "picom -b --experimental-backends &"
   spawnOnce "flameshot &"
   spawnOnce "$HOME/.config/udiskie/launch.sh &"
---spawnOnce "trayer --edge bottom --align center --widthtype request --padding 10 --SetDockType true --SetPartialStrut true --expand true --monitor 1 --transparent true --alpha 0 --tint 0x282c34  --height 22 &" -- Copied from dt gitlab
 -- See https://wiki.haskell.org/Xmonad/Config_archive/John_Goerzen%27s_Configuration for trayer
 -- Not spawn once because I set my xmonad restart shortcut to recompile, kill and restart trayer, and restart xmonad
 -- TODO Find solution to make trayer pitch black to blend in with xmobar
@@ -426,9 +418,6 @@ myStartupHook = do
   spawnOnce "volumeicon &"
   spawnOnOnce "IV" "radeon-profile"
   spawnOnOnce "II" "terminator"
---  spawnOnOnce "III" "thunar &"
---  spawnOnOnce "I" "emacs &"
---  spawnOnOnce "I" "firefox &"
   spawnOnce "emacs --daemon &" -- Start emacs daemon on startup
   setWMName "LG3D"
 ------------------------------------------------------------------------
