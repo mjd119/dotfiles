@@ -7,8 +7,8 @@ configuration {
   display-drun: " ";
   display-window: " ";
   modi: "window,run,drun";
-  theme: "onedark";
 }
+@theme "onedark"
 element-icon {
   size: 2.25ch;
 }

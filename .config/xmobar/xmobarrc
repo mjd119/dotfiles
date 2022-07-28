@@ -1,5 +1,5 @@
 -- Modified from https://github.com/jaor/xmobar/blob/master/examples/xmobar.config
-Config { font = "xft:SauceCodePro Nerd Font Mono:pixelsize=15:antialias=true:hinting=true"
+Config { font = "xft:Hack Nerd Font Mono:pixelsize=16:antialias=true:hinting=true"
        , additionalFonts = []
        , borderColor = "black"
        , border = TopB

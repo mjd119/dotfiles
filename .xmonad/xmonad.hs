@@ -383,7 +383,10 @@ myManageHook = composeAll
 -- return (All True) if the default handler is to be run afterwards. To
 -- combine event hooks use mappend or mconcat from Data.Monoid.
 --
-myEventHook = fullscreenEventHook <+> refocusLastWhen (refocusingIsActive <||> isFloat)
+
+-- Comment out due to compile error (check xmonad website)
+-- myEventHook = fullscreenEventHook <+> refocusLastWhen (refocusingIsActive <||> isFloat)
+myEventHook = refocusLastWhen (refocusingIsActive <||> isFloat)
 
 ------------------------------------------------------------------------
 -- Status bars and logging
