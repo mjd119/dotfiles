@@ -108,7 +108,7 @@ if [ -e $HOME/.bash_aliases ]; then
 fi
 
 # Added to have access to autojump in bash (added by mjd119)
-[[ -s /etc/profile.d/autojump.sh ]] && source /etc/profile.d/autojump.sh
+#[[ -s /etc/profile.d/autojump.sh ]] && source /etc/profile.d/autojump.sh
 
 # Print color panes from shell-color-scripts on every terminal instance
 colorscript exec panes

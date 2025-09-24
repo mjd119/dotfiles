@@ -26,6 +26,7 @@ xsetroot -cursor_name left_ptr # Needed to set cursor for the root window
 xset r rate 250 30 # Typematic delay and rate for Xorg
 #exec i3
 exec xmonad
+#startxfce4
 # Needed to start gnome desktop environment (from Arch Wiki)
 #export XDG_SESSION_TYPE=x11
 #export GDK_BACKEND=x11

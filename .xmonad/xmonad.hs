@@ -407,7 +407,7 @@ myEventHook = refocusLastWhen (refocusingIsActive <||> isFloat)
 -- Changed return () to spawnOnce with programs (mjd119)
 myStartupHook = do
   spawnOnce "imwheel -d -b 45"
-  --spawnOnce "nm-applet &"
+  spawnOnce "nm-applet &"
   spawnOnce "~/.fehbg &"
   spawnOnce "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &"
   spawnOnce "picom -b --experimental-backends &"
